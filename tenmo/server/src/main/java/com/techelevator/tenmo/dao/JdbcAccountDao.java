@@ -16,12 +16,12 @@ public class JdbcAccountDao implements AccountDao{
 
 
     @Override
-    public BigDecimal getBalance(int id) {
+    public BigDecimal getBalance(int account_id) {
         String sql = "SELECT balance FROM account JOIN tenmo_user ON account.user_id = tenmo_user.user_id WHERE account_id = ?;";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql,id);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql,account_id);
+
         if(rowSet.next()){
-            Account account = mapRowToAccount(rowSet);
-            return account.getBalance();
+            return rowSet.getBigDecimal("balance");
         }
 
         return null;

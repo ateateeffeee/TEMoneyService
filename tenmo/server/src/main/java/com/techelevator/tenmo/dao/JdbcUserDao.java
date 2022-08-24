@@ -68,8 +68,15 @@ public class JdbcUserDao implements UserDao {
         }
 
         // TODO: Create the account record with initial balance
-        String sql = "INSERT INTO account(user_id, account_id, balance)" +
-                "VALUES(?,?,? ";
+        String accountSql = "INSERT INTO account(user_id, account_id, balance)" +
+                " VALUES(?,default,?);";
+        BigDecimal balance =  new BigDecimal("1000");
+        jdbcTemplate.update(accountSql,newUserId, balance);
+
+        //
+
+
+
 
         return true;
     }

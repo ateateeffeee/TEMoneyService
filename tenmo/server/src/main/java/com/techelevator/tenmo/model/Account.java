@@ -12,9 +12,9 @@ public class Account {
 
     @JsonProperty("userId")
     private int user_id;
-    private BigDecimal balance = new BigDecimal("1000") ;
+    private BigDecimal balance;
 
-    public Account () { }
+   public Account () { }
 
     public Account(int account_id, int user_id, BigDecimal balance) {
         this.account_id = account_id;
