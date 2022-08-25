@@ -78,7 +78,7 @@ public class JdbcTransferMoneyDao implements TransferMoneyDao {
 
         }
         //TODO:this returns user object with nulls, want to only return name and id
-        
+
         return userList;
     }
 
