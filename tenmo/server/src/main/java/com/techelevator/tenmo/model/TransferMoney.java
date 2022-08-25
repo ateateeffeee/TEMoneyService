@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.model;
 
 import javax.validation.constraints.Min;
+import java.math.BigDecimal;
 
 public class TransferMoney {
 
@@ -11,9 +12,9 @@ public class TransferMoney {
     private int receiverId;
 
     @Min(value = 1 , message = "Can't transfer zero or negative amount")
-    private int transferAmount;
+    private BigDecimal transferAmount;
 
-    public TransferMoney(int transferId, int senderId, int receiverId, int transferAmount) {
+    public TransferMoney(int transferId, int senderId, int receiverId, BigDecimal transferAmount) {
         this.transferId = transferId;
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -44,11 +45,11 @@ public class TransferMoney {
         this.receiverId = receiverId;
     }
 
-    public int getTransferAmount() {
+    public BigDecimal getTransferAmount() {
         return transferAmount;
     }
 
-    public void setTransferAmount(int transferAmount) {
+    public void setTransferAmount(BigDecimal transferAmount) {
         this.transferAmount = transferAmount;
     }
 }

@@ -2,6 +2,7 @@ package com.techelevator.tenmo.controller;
 
 
 import com.techelevator.tenmo.dao.AccountDao;
+import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,13 +19,19 @@ import java.security.Principal;
 public class AccountController {
 
     private AccountDao accountDao;
+    private UserDao userDao;
 
-    public AccountController(AccountDao accountDao) {this.accountDao =accountDao;}
+    public AccountController(AccountDao accountDao, UserDao userDao) {this.accountDao =accountDao;
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    public BigDecimal get(@PathVariable int id) {
+    this.userDao = userDao;}
+
+    @RequestMapping(path = "", method = RequestMethod.GET)
+    public BigDecimal get(Principal principal) {
         //TODO: restrict access with Principle principle if hashcode matches password
-        return accountDao.getBalance(id);
+
+        BigDecimal balance = accountDao.getBalance(userDao.findByUsername(principal.getName()).getId());
+
+        return balance;
     }
 
 }
