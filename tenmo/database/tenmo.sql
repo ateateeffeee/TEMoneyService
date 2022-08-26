@@ -44,6 +44,8 @@ CREATE TABLE transfer_money (
 	sender_user_id int NOT NULL ,
 	receiver_user_id int NOT NULL,
 	transfer_amount decimal(13, 2) NOT NULL,
+	status varchar(10) NOT NULL,
+	--transfer type??
 	CONSTRAINT PK_transfer_money PRIMARY KEY (transfer_id),
 	CONSTRAINT FK_transfer_money_sender_tenmo_user FOREIGN KEY ( sender_user_id) REFERENCES tenmo_user (user_id)
 );

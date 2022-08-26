@@ -14,6 +14,8 @@ public class TransferMoney {
     @Min(value = 1 , message = "Can't transfer zero or negative amount")
     private BigDecimal transferAmount;
 
+    public TransferMoney(){};
+
     public TransferMoney(int transferId, int senderId, int receiverId, BigDecimal transferAmount) {
         this.transferId = transferId;
         this.senderId = senderId;

@@ -4,6 +4,7 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.TransferMoneyDao;
+import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.TransferMoney;
 import com.techelevator.tenmo.model.User;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 
 @PreAuthorize("isAuthenticated()")
@@ -23,10 +25,12 @@ public class TransferController {
 
     private TransferMoneyDao transferMoneyDao;
     private JdbcAccountDao jdbcAccountDao;
+    private UserDao userDao;
 
-    public TransferController(TransferMoneyDao transferMoneyDao,JdbcAccountDao jdbcAccountDao) {
+    public TransferController(TransferMoneyDao transferMoneyDao,JdbcAccountDao jdbcAccountDao, UserDao userDao) {
         this.transferMoneyDao = transferMoneyDao;
         this.jdbcAccountDao = jdbcAccountDao;
+        this.userDao = userDao;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -46,6 +50,15 @@ public class TransferController {
     public List<User> getUsers(){
         //don't show logged in user
         return transferMoneyDao.getListOfIdsAndUsernames();
+    }
+
+    @RequestMapping(path = "", method = RequestMethod.GET)
+    public List<TransferMoney> getTransfers(Principal principal){
+
+        int userId = userDao.findIdByUsername(principal.getName());
+
+
+        return transferMoneyDao.getListOfTransfersForUserId(userId);
     }
 
 }
