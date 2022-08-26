@@ -15,14 +15,46 @@ import java.util.List;
 public class JdbcTransferMoneyDao implements TransferMoneyDao {
 
     private JdbcTemplate jdbcTemplate;
+    private JdbcAccountDao jdbcAccountDao;
 
-    public JdbcTransferMoneyDao(JdbcTemplate jdbcTemplate) {
+    public JdbcTransferMoneyDao(JdbcTemplate jdbcTemplate, JdbcAccountDao jdbcAccountDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcAccountDao =jdbcAccountDao;
     }
 
     @Override
     public int createTransfer(int senderId, int receiverId, BigDecimal transferAmount) {
 
+
+        
+            BigDecimal balance = jdbcAccountDao.getBalance(senderId);
+            BigDecimal transfer = transferAmount;
+
+            String sql = "INSERT INTO transfer_money(sender_user_id,receiver_user_id,transfer_amount)\n" +
+                    "VALUES(?,?,?) RETURNING transfer_id";
+            Integer newId;
+
+            //Update sender account
+            String updateSenderSql = " UPDATE account SET balance = balance - ? \n" +
+                    "WHERE user_id = ?;";
+
+
+            String updateReceiverSql = " UPDATE account SET balance = balance + ? \n" +
+                    "WHERE user_id = ?;";
+
+
+            try {
+                newId = jdbcTemplate.queryForObject(sql, Integer.class, senderId, receiverId, transferAmount);
+
+                jdbcTemplate.update(updateSenderSql, transferAmount, senderId);
+                jdbcTemplate.update(updateReceiverSql, transferAmount, receiverId);
+                return newId;
+
+            } catch (DataAccessException e) {
+                System.out.println("Error");
+            }
+
+//   if(jdbcAccountDao.getPrivateAccount(senderId).getBalance().compareTo(transferAmount)>0)
         //make this work with postman
         //how to update account objects????
 
@@ -34,29 +66,7 @@ public class JdbcTransferMoneyDao implements TransferMoneyDao {
 //            senderAccount.setBalance(senderAccount.getBalance().subtract(transferAmount));
 //            receiverAccount.setBalance(receiverAccount.getBalance().add(transferAmount));
 
-        String sql = "INSERT INTO transfer_money(sender_user_id,receiver_user_id,transfer_amount)\n" +
-                "VALUES(?,?,?) RETURNING transfer_id";
-        Integer newId;
 
-        //Update sender account
-        String updateSenderSql = " UPDATE account SET balance = balance - ? \n" +
-                "WHERE user_id = ?;";
-
-
-        String updateReceiverSql = " UPDATE account SET balance = balance + ? \n" +
-                "WHERE user_id = ?;";
-
-
-        try {
-            newId = jdbcTemplate.queryForObject(sql, Integer.class, senderId, receiverId, transferAmount);
-
-            jdbcTemplate.update(updateSenderSql, transferAmount, senderId);
-            jdbcTemplate.update(updateReceiverSql, transferAmount, receiverId);
-            return newId;
-
-        } catch (DataAccessException e) {
-            System.out.println("Error");
-        }
 
 
         return 0;

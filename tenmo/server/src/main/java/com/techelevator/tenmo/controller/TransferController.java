@@ -1,6 +1,8 @@
 package com.techelevator.tenmo.controller;
 
 
+import com.techelevator.tenmo.dao.AccountDao;
+import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.TransferMoneyDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.TransferMoney;
@@ -20,17 +22,24 @@ import java.util.List;
 public class TransferController {
 
     private TransferMoneyDao transferMoneyDao;
+    private JdbcAccountDao jdbcAccountDao;
 
-    public TransferController(TransferMoneyDao transferMoneyDao) {
+    public TransferController(TransferMoneyDao transferMoneyDao,JdbcAccountDao jdbcAccountDao) {
         this.transferMoneyDao = transferMoneyDao;
+        this.jdbcAccountDao = jdbcAccountDao;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST)
     public BigDecimal create(@Valid @RequestBody TransferMoney transferMoney){
-        transferMoneyDao.createTransfer(transferMoney.getSenderId(),transferMoney.getReceiverId(),transferMoney.getTransferAmount());
-
-        return transferMoney.getTransferAmount();
+        if(transferMoney.getReceiverId()== transferMoney.getSenderId()){
+            return new BigDecimal("0");
+        }
+        if(jdbcAccountDao.getBalance(transferMoney.getSenderId()).compareTo(transferMoney.getTransferAmount())>=0){
+            transferMoneyDao.createTransfer(transferMoney.getSenderId(),transferMoney.getReceiverId(),transferMoney.getTransferAmount());
+            return transferMoney.getTransferAmount();
+        }
+        return new BigDecimal("0");
     }
 
     @RequestMapping(path = "/users", method = RequestMethod.GET )
