@@ -40,7 +40,8 @@ public class TransferController {
             return new BigDecimal("0");
         }
         if(jdbcAccountDao.getBalance(transferMoney.getSenderId()).compareTo(transferMoney.getTransferAmount())>=0){
-            transferMoneyDao.createTransfer(transferMoney.getSenderId(),transferMoney.getReceiverId(),transferMoney.getTransferAmount());
+            transferMoney.setStatus("Approved");
+            transferMoneyDao.createTransfer(transferMoney.getSenderId(),transferMoney.getReceiverId(),transferMoney.getTransferAmount(), transferMoney.getStatus());
             return transferMoney.getTransferAmount();
         }
         return new BigDecimal("0");
@@ -59,6 +60,13 @@ public class TransferController {
 
 
         return transferMoneyDao.getListOfTransfersForUserId(userId);
+    }
+
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
+    public TransferMoney getTransferFromTransferId(@PathVariable int id){
+
+
+        return transferMoneyDao.getTransferMoneyFromTransferId(id);
     }
 
 }

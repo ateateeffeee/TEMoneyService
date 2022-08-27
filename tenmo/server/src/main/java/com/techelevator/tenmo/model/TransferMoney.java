@@ -14,13 +14,16 @@ public class TransferMoney {
     @Min(value = 1 , message = "Can't transfer zero or negative amount")
     private BigDecimal transferAmount;
 
+    private String status;
+
     public TransferMoney(){};
 
-    public TransferMoney(int transferId, int senderId, int receiverId, BigDecimal transferAmount) {
+    public TransferMoney(int transferId, int senderId, int receiverId, BigDecimal transferAmount, String status) {
         this.transferId = transferId;
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.transferAmount = transferAmount;
+        this.status = status;
     }
 
     public int getTransferId() {
@@ -53,5 +56,13 @@ public class TransferMoney {
 
     public void setTransferAmount(BigDecimal transferAmount) {
         this.transferAmount = transferAmount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

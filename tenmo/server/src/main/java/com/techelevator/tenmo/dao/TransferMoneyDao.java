@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TransferMoneyDao {
 
-    int createTransfer(int senderId, int receiverId, BigDecimal transferAmount);
+    int createTransfer(int senderId, int receiverId, BigDecimal transferAmount, String status);
 
     List<User> getListOfIdsAndUsernames();
 

@@ -24,15 +24,15 @@ public class JdbcTransferMoneyDao implements TransferMoneyDao {
     }
 
     @Override
-    public int createTransfer(int senderId, int receiverId, BigDecimal transferAmount) {
+    public int createTransfer(int senderId, int receiverId, BigDecimal transferAmount, String status) {
 
 
         
-            BigDecimal balance = jdbcAccountDao.getBalance(senderId);
-            BigDecimal transfer = transferAmount;
+            //BigDecimal balance = jdbcAccountDao.getBalance(senderId);
+            //BigDecimal transfer = transferAmount;
 
-            String sql = "INSERT INTO transfer_money(sender_user_id,receiver_user_id,transfer_amount)\n" +
-                    "VALUES(?,?,?) RETURNING transfer_id";
+            String sql = "INSERT INTO transfer_money(sender_user_id,receiver_user_id,transfer_amount, status)\n" +
+                    "VALUES(?,?,?,?) RETURNING transfer_id";
             Integer newId;
 
             //Update sender account
@@ -45,7 +45,7 @@ public class JdbcTransferMoneyDao implements TransferMoneyDao {
 
 
             try {
-                newId = jdbcTemplate.queryForObject(sql, Integer.class, senderId, receiverId, transferAmount);
+                newId = jdbcTemplate.queryForObject(sql, Integer.class, senderId, receiverId, transferAmount, status);
 
                 jdbcTemplate.update(updateSenderSql, transferAmount, senderId);
                 jdbcTemplate.update(updateReceiverSql, transferAmount, receiverId);
@@ -96,7 +96,7 @@ public class JdbcTransferMoneyDao implements TransferMoneyDao {
     @Override
     public List<TransferMoney> getListOfTransfersForUserId(int id) {
         List<TransferMoney> transferList = new ArrayList<>();
-        String sql = "Select transfer_id, sender_user_id, receiver_user_id, transfer_amount FROM transfer_money WHERE sender_user_id = ? OR receiver_user_id = ?;";
+        String sql = "Select transfer_id, sender_user_id, receiver_user_id, transfer_amount, status FROM transfer_money WHERE sender_user_id = ? OR receiver_user_id = ?;";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql,id,id);
         while (rowSet.next()){
             TransferMoney transferMoney = new TransferMoney();
@@ -109,7 +109,7 @@ public class JdbcTransferMoneyDao implements TransferMoneyDao {
     }
     @Override
     public TransferMoney getTransferMoneyFromTransferId(int id){
-        String sql = "SELECT transfer_id, sender_user_id, receiver_user_id, transfer_amount FROM transfer_money WHERE transfer_id = ?;";
+        String sql = "SELECT transfer_id, sender_user_id, receiver_user_id, transfer_amount, status FROM transfer_money WHERE transfer_id = ?;";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql,id);
         if (rowSet.next()){
             return mapRowToTransferMoney(rowSet);
@@ -123,6 +123,7 @@ public class JdbcTransferMoneyDao implements TransferMoneyDao {
         transferMoney.setSenderId(rowSet.getInt("sender_user_id"));
         transferMoney.setReceiverId(rowSet.getInt("receiver_user_id"));
         transferMoney.setTransferAmount(rowSet.getBigDecimal("transfer_amount"));
+        transferMoney.setStatus(rowSet.getString("status"));
 
         return transferMoney;
     }
